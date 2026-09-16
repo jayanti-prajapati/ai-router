@@ -1,0 +1,10 @@
+# Source and dev files — not needed by consumers
+src/
+examples/
+.github/
+tsconfig.json
+tsconfig.build.json
+.env*
+*.tsbuildinfo
+node_modules/
+coverage/

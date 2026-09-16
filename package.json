@@ -1,0 +1,87 @@
+{
+  "name": "@ai/router",
+  "version": "1.0.0",
+  "description": "Production-ready AI model router: classify complexity, route to the right model, guard cost, A/B test — with zero vendor lock-in.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "import": "./dist/core/types.js",
+      "types": "./dist/core/types.d.ts"
+    },
+    "./router": {
+      "import": "./dist/core/router.js",
+      "types": "./dist/core/router.d.ts"
+    },
+    "./providers": {
+      "import": "./dist/providers/registry.js",
+      "types": "./dist/providers/registry.d.ts"
+    },
+    "./prompts": {
+      "import": "./dist/prompts/registry.js",
+      "types": "./dist/prompts/registry.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build",
+    "release:patch": "npm version patch && git push --follow-tags && npm publish --access public",
+    "release:minor": "npm version minor && git push --follow-tags && npm publish --access public",
+    "release:major": "npm version major && git push --follow-tags && npm publish --access public"
+  },
+  "keywords": [
+    "ai",
+    "llm",
+    "router",
+    "openai",
+    "anthropic",
+    "model-routing",
+    "cost-optimization",
+    "complexity-classifier",
+    "ai-gateway",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coozmoo/ai-router.git"
+  },
+  "homepage": "https://github.com/coozmoo/ai-router#readme",
+  "bugs": {
+    "url": "https://github.com/coozmoo/ai-router/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@fastify/formbody": "^7.4.0",
+    "@types/node": "^22.0.0",
+    "bullmq": "^5.4.0",
+    "fastify": "^5.0.0",
+    "ioredis": "^5.3.2",
+    "typescript": "^5.8.3"
+  },
+  "optionalDependencies": {
+    "bullmq": "^5.4.0",
+    "fastify": "^5.0.0",
+    "ioredis": "^5.3.2"
+  }
+}

@@ -59,11 +59,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jayanti-prajapati/ai-router.git"
+    "url": "git+https://github.com/jayanti-prajapati/smart-ai-router.git"
   },
-  "homepage": "https://github.com/jayanti-prajapati/ai-router#readme",
+  "homepage": "https://github.com/jayanti-prajapati/smart-ai-router#readme",
   "bugs": {
-    "url": "https://github.com/jayanti-prajapati/ai-router/issues"
+    "url": "https://github.com/jayanti-prajapati/smart-ai-router/issues"
   },
   "engines": {
     "node": ">=18.0.0"

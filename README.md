@@ -1,7 +1,7 @@
 # smart-ai-router
 
 [![npm](https://img.shields.io/npm/v/smart-ai-router)](https://www.npmjs.com/package/smart-ai-router)
-[![CI](https://github.com/jayanti-prajapati/ai-router/actions/workflows/ci.yml/badge.svg)](https://github.com/jayanti-prajapati/ai-router/actions/workflows/ci.yml)
+[![CI](https://github.com/jayanti-prajapati/smart-ai-router/actions/workflows/ci.yml/badge.svg)](https://github.com/jayanti-prajapati/smart-ai-router/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Production-ready AI model router for Node.js + TypeScript.**

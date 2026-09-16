@@ -7,6 +7,13 @@ Versioning: [SemVer](https://semver.org/)
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-09-16
+
+### Changed
+
+- Renamed package from `@ai/router` to `smart-ai-router`
+- Updated all documentation and import examples to use `smart-ai-router`
+
 ## [1.0.0] - 2026-09-16
 
 ### Added

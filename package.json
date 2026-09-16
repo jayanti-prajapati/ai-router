@@ -1,5 +1,5 @@
 {
-  "name": "@ai/router",
+  "name": "ai-router",
   "version": "1.0.0",
   "description": "Production-ready AI model router: classify complexity, route to the right model, guard cost, A/B test — with zero vendor lock-in.",
   "type": "module",
@@ -59,11 +59,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/coozmoo/ai-router.git"
+    "url": "git+https://github.com/jayanti-prajapati/ai-router.git"
   },
-  "homepage": "https://github.com/coozmoo/ai-router#readme",
+  "homepage": "https://github.com/jayanti-prajapati/ai-router#readme",
   "bugs": {
-    "url": "https://github.com/coozmoo/ai-router/issues"
+    "url": "https://github.com/jayanti-prajapati/ai-router/issues"
   },
   "engines": {
     "node": ">=18.0.0"

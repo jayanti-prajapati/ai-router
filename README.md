@@ -420,4 +420,4 @@ This package follows [SemVer](https://semver.org/):
 
 ## License
 
-MIT © 2026 RankRabbit. See [LICENSE](./LICENSE).
+MIT © 2026 Jayantilal Prajapat. See [LICENSE](./LICENSE).

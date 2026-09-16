@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to `@ai/router` are documented here.
+All notable changes to `smart-ai-router` are documented here.
 
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)
 Versioning: [SemVer](https://semver.org/)

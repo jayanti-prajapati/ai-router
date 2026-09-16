@@ -1,7 +1,7 @@
-# @ai/router
+# smart-ai-router
 
-[![npm](https://img.shields.io/npm/v/@ai/router)](https://www.npmjs.com/package/@ai/router)
-[![CI](https://github.com/coozmoo/ai-router/actions/workflows/ci.yml/badge.svg)](https://github.com/coozmoo/ai-router/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/smart-ai-router)](https://www.npmjs.com/package/smart-ai-router)
+[![CI](https://github.com/jayanti-prajapati/ai-router/actions/workflows/ci.yml/badge.svg)](https://github.com/jayanti-prajapati/ai-router/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **Production-ready AI model router for Node.js + TypeScript.**
@@ -22,13 +22,13 @@ complex prompt → gpt-4.1       ($0.003)
 ## Install
 
 ```bash
-npm install @ai/router
+npm install smart-ai-router
 ```
 
 Set at least one provider key:
 
 ```bash
-cp node_modules/@ai/router/.env.example .env
+cp node_modules/smart-ai-router/.env.example .env
 # Edit .env: set OPENAI_API_KEY or ANTHROPIC_API_KEY
 ```
 
@@ -37,17 +37,19 @@ cp node_modules/@ai/router/.env.example .env
 ## Quick start
 
 ```typescript
-import { runAiRequest } from '@ai/router';
+import { runAiRequest } from "smart-ai-router";
 
 const result = await runAiRequest({
-  task: 'format',
-  input: 'Convert to JSON: name Ada Lovelace, born 1815, field mathematics.',
+  task: "format",
+  input: "Convert to JSON: name Ada Lovelace, born 1815, field mathematics.",
 });
 
 console.log(result.output);
 // { "name": "Ada Lovelace", "born": 1815, "field": "mathematics" }
 
-console.log(`Model: ${result.modelUsed}  Cost: $${result.costEstimate.toFixed(6)}`);
+console.log(
+  `Model: ${result.modelUsed}  Cost: $${result.costEstimate.toFixed(6)}`,
+);
 // Model: gpt-4.1-nano  Cost: $0.000094
 ```
 
@@ -104,11 +106,11 @@ Request
 
 ## Complexity tiers
 
-| Tier    | Score range | Models (default)                   | Typical requests                            |
-|---------|-------------|-------------------------------------|---------------------------------------------|
+| Tier    | Score range | Models (default)                      | Typical requests                             |
+| ------- | ----------- | ------------------------------------- | -------------------------------------------- |
 | simple  | ≤ 0         | gpt-4.1-nano, claude-haiku-4-5, local | Formatting, JSON, spelling, short transforms |
-| medium  | 0 – 3.5     | gpt-4.1-mini, claude-sonnet-5       | Code generation, API integration, summaries  |
-| complex | > 3.5       | gpt-4.1, claude-opus-5              | Architecture, deep reasoning, large context  |
+| medium  | 0 – 3.5     | gpt-4.1-mini, claude-sonnet-5         | Code generation, API integration, summaries  |
+| complex | > 3.5       | gpt-4.1, claude-opus-5                | Architecture, deep reasoning, large context  |
 
 `priority=speed` shifts the tier one step down; `priority=quality` one step up.
 
@@ -122,16 +124,16 @@ The primary function. Handles the full lifecycle: cache → classify → route �
 
 #### `RunRequest`
 
-| Field        | Type                              | Required | Description |
-|--------------|-----------------------------------|----------|-------------|
-| `task`       | `string`                          | ✓        | Short label for the job type (`"codegen"`, `"format"`, …) |
-| `input`      | `string`                          | ✓        | The full prompt body |
-| `priority`   | `"speed" \| "balanced" \| "quality"` |       | Default: `"balanced"` |
-| `forceModel` | `string`                          |          | Bypass classification and routing entirely |
-| `promptId`   | `string`                          |          | Template reference, e.g. `"code-review@2"` |
-| `acceptCost` | `boolean`                         |          | Allow cost above `MAX_COST_PER_REQUEST` |
-| `noCache`    | `boolean`                         |          | Skip read and write for this call |
-| `debug`      | `boolean`                         |          | Include signals and routing reason in response |
+| Field        | Type                                 | Required | Description                                               |
+| ------------ | ------------------------------------ | -------- | --------------------------------------------------------- |
+| `task`       | `string`                             | ✓        | Short label for the job type (`"codegen"`, `"format"`, …) |
+| `input`      | `string`                             | ✓        | The full prompt body                                      |
+| `priority`   | `"speed" \| "balanced" \| "quality"` |          | Default: `"balanced"`                                     |
+| `forceModel` | `string`                             |          | Bypass classification and routing entirely                |
+| `promptId`   | `string`                             |          | Template reference, e.g. `"code-review@2"`                |
+| `acceptCost` | `boolean`                            |          | Allow cost above `MAX_COST_PER_REQUEST`                   |
+| `noCache`    | `boolean`                            |          | Skip read and write for this call                         |
+| `debug`      | `boolean`                            |          | Include signals and routing reason in response            |
 
 #### `RunResponse`
 
@@ -189,15 +191,15 @@ Local models cost $0.00 per token — the cost guard will always prefer them whe
 
 ## Cost model (September 2026)
 
-| Model                 | Input $/MTok | Output $/MTok | Tier    |
-|-----------------------|-------------|---------------|---------|
-| gpt-4.1-nano          | $0.10       | $0.40         | simple  |
-| claude-haiku-4-5      | $1.00       | $5.00         | simple  |
-| gpt-4.1-mini          | $0.40       | $1.60         | medium  |
-| claude-sonnet-5       | $3.00       | $15.00        | medium  |
-| gpt-4.1               | $2.00       | $8.00         | complex |
-| claude-opus-5         | $5.00       | $25.00        | complex |
-| local (Ollama/vLLM)   | $0.00       | $0.00         | simple  |
+| Model               | Input $/MTok | Output $/MTok | Tier    |
+| ------------------- | ------------ | ------------- | ------- |
+| gpt-4.1-nano        | $0.10        | $0.40         | simple  |
+| claude-haiku-4-5    | $1.00        | $5.00         | simple  |
+| gpt-4.1-mini        | $0.40        | $1.60         | medium  |
+| claude-sonnet-5     | $3.00        | $15.00        | medium  |
+| gpt-4.1             | $2.00        | $8.00         | complex |
+| claude-opus-5       | $5.00        | $25.00        | complex |
+| local (Ollama/vLLM) | $0.00        | $0.00         | simple  |
 
 Update prices in `src/config/models.ts` — they are pure configuration, no rebuild needed.
 
@@ -209,10 +211,10 @@ Templates are versioned: `"code-review"` resolves to the latest version; `"code-
 
 ```typescript
 // Use the latest code-review template
-await runAiRequest({ task: 'review', input: code, promptId: 'code-review' });
+await runAiRequest({ task: "review", input: code, promptId: "code-review" });
 
 // Pin to version 1
-await runAiRequest({ task: 'review', input: code, promptId: 'code-review@1' });
+await runAiRequest({ task: "review", input: code, promptId: "code-review@1" });
 ```
 
 A pinned template can override complexity and temperature:
@@ -248,24 +250,32 @@ AB_EXPERIMENTS='{"haiku-vs-nano":{"control":"gpt-4.1-nano","variant":"claude-hai
 1. Create `my-provider.ts` extending `BaseProvider`:
 
 ```typescript
-import { BaseProvider, ProviderError } from '@ai/router';
-import type { NormalizedRequest, NormalizedResponse, ProviderName } from '@ai/router';
+import { BaseProvider, ProviderError } from "smart-ai-router";
+import type {
+  NormalizedRequest,
+  NormalizedResponse,
+  ProviderName,
+} from "smart-ai-router";
 
 export class MyProvider extends BaseProvider {
-  readonly name = 'myprovider' as ProviderName;
+  readonly name = "myprovider" as ProviderName;
 
   protected async send(req: NormalizedRequest): Promise<NormalizedResponse> {
     // Call your vendor's API here.
     // Use this.post() for a shared fetch wrapper with error normalisation.
-    const data = await this.post('https://api.example.com/v1/chat', {
-      authorization: `Bearer ${process.env.MY_API_KEY}`,
-    }, { model: req.modelId, prompt: req.prompt });
+    const data = await this.post(
+      "https://api.example.com/v1/chat",
+      {
+        authorization: `Bearer ${process.env.MY_API_KEY}`,
+      },
+      { model: req.modelId, prompt: req.prompt },
+    );
 
     return {
       output: data.text,
       inputTokens: data.usage.input,
       outputTokens: data.usage.output,
-      finishReason: 'stop',
+      finishReason: "stop",
     };
   }
 }
@@ -274,7 +284,7 @@ export class MyProvider extends BaseProvider {
 2. Register it before calling `runAiRequest`:
 
 ```typescript
-import { getProvider } from '@ai/router';
+import { getProvider } from "smart-ai-router";
 // Monkey-patch the registry for now; a first-class registration API
 // is planned for v1.1.0.
 ```
@@ -288,24 +298,24 @@ import { getProvider } from '@ai/router';
 By default, telemetry is logged to stdout and held in an in-process ring buffer. In production, wire it to your database:
 
 ```typescript
-import { setTelemetrySink } from '@ai/router';
+import { setTelemetrySink } from "smart-ai-router";
 
 setTelemetrySink(async (row) => {
   await db.insert(aiRequests).values({
-    requestId:    row.requestId,
-    task:         row.task,
-    modelUsed:    row.modelUsed,
-    provider:     row.provider,
-    complexity:   row.complexity,
-    priority:     row.priority,
-    inputTokens:  row.inputTokens,
+    requestId: row.requestId,
+    task: row.task,
+    modelUsed: row.modelUsed,
+    provider: row.provider,
+    complexity: row.complexity,
+    priority: row.priority,
+    inputTokens: row.inputTokens,
     outputTokens: row.outputTokens,
-    costUsd:      row.costUsd,
-    latencyMs:    row.latencyMs,
-    cached:       row.cached,
-    escalated:    row.escalated,
-    error:        row.error,
-    createdAt:    row.createdAt,
+    costUsd: row.costUsd,
+    latencyMs: row.latencyMs,
+    cached: row.cached,
+    escalated: row.escalated,
+    error: row.error,
+    createdAt: row.createdAt,
   });
 });
 ```
@@ -328,7 +338,7 @@ CACHE_TTL_SECONDS=3600
 Requires `REDIS_URL` and `QUEUE_ENABLED=true`. Start the worker alongside your app:
 
 ```bash
-node --import tsx/esm node_modules/@ai/router/dist/services/worker.js
+node --import tsx/esm node_modules/smart-ai-router/dist/services/worker.js
 ```
 
 Or, when using the built-in Fastify server, add `?async=true` to enqueue instead of blocking:
@@ -350,7 +360,7 @@ curl http://localhost:3000/ai/jobs/42
 The library ships an optional Fastify server that exposes all functionality over HTTP.
 
 ```bash
-node --import tsx/esm node_modules/@ai/router/dist/server.js
+node --import tsx/esm node_modules/smart-ai-router/dist/server.js
 ```
 
 Endpoints: `POST /ai/run`, `GET /ai/jobs/:id`, `GET /ai/models`, `GET /ai/prompts`, `GET /ai/metrics`, `GET /health`.
@@ -359,18 +369,18 @@ Endpoints: `POST /ai/run`, `GET /ai/jobs/:id`, `GET /ai/models`, `GET /ai/prompt
 
 ## Environment reference
 
-| Variable | Default | Effect |
-|---|---|---|
-| `MAX_COST_PER_REQUEST` | `0.05` | Hard ceiling per call (USD) |
-| `FALLBACK_TO_CHEAPER_MODEL` | `true` | Downgrade on budget breach vs. throw `CostLimitError` |
-| `DAILY_BUDGET_USD` | `0` | 0 = disabled; circuit-breaks to cheapest tier when exceeded |
-| `ENABLE_META_CLASSIFIER` | `false` | Second-opinion AI call when heuristic confidence < 0.7 |
-| `FORCE_MODEL` | — | Global override: every request gets this model |
-| `ENABLE_QUALITY_RETRY` | `true` | Escalate once on bad output |
-| `QUALITY_MIN_SCORE` | `0.5` | 0–1; below this triggers escalation |
-| `CACHE_ENABLED` | `true` | Prompt-hash cache (Redis or in-process LRU) |
-| `CACHE_TTL_SECONDS` | `3600` | Cache entry lifetime |
-| `QUEUE_ENABLED` | `false` | BullMQ async jobs (requires `REDIS_URL`) |
+| Variable                    | Default | Effect                                                      |
+| --------------------------- | ------- | ----------------------------------------------------------- |
+| `MAX_COST_PER_REQUEST`      | `0.05`  | Hard ceiling per call (USD)                                 |
+| `FALLBACK_TO_CHEAPER_MODEL` | `true`  | Downgrade on budget breach vs. throw `CostLimitError`       |
+| `DAILY_BUDGET_USD`          | `0`     | 0 = disabled; circuit-breaks to cheapest tier when exceeded |
+| `ENABLE_META_CLASSIFIER`    | `false` | Second-opinion AI call when heuristic confidence < 0.7      |
+| `FORCE_MODEL`               | —       | Global override: every request gets this model              |
+| `ENABLE_QUALITY_RETRY`      | `true`  | Escalate once on bad output                                 |
+| `QUALITY_MIN_SCORE`         | `0.5`   | 0–1; below this triggers escalation                         |
+| `CACHE_ENABLED`             | `true`  | Prompt-hash cache (Redis or in-process LRU)                 |
+| `CACHE_TTL_SECONDS`         | `3600`  | Cache entry lifetime                                        |
+| `QUEUE_ENABLED`             | `false` | BullMQ async jobs (requires `REDIS_URL`)                    |
 
 See `.env.example` for the full annotated reference.
 
@@ -392,10 +402,10 @@ See `.env.example` for the full annotated reference.
 
 This package follows [SemVer](https://semver.org/):
 
-| Bump | When |
-|---|---|
-| `patch` | Bug fixes, doc updates, dependency bumps |
-| `minor` | New provider, new exported API, new feature |
+| Bump    | When                                                                 |
+| ------- | -------------------------------------------------------------------- |
+| `patch` | Bug fixes, doc updates, dependency bumps                             |
+| `minor` | New provider, new exported API, new feature                          |
 | `major` | Breaking change to `RunRequest`, `RunResponse`, or any exported type |
 
 ---

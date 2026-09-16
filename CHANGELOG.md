@@ -7,6 +7,12 @@ Versioning: [SemVer](https://semver.org/)
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-09-16
+
+### Fixed
+
+- Bumped version to resolve npm publish conflict (1.0.3 already published)
+
 ## [1.0.1] - 2026-09-16
 
 ### Changed

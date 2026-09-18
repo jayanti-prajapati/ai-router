@@ -1,29 +1,34 @@
 {
   "name": "smart-ai-router",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Production-ready AI model router: classify complexity, route to the right model, guard cost, A/B test — with zero vendor lock-in.",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/cjs/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "require": "./dist/cjs/index.js",
       "types": "./dist/index.d.ts"
     },
     "./types": {
       "import": "./dist/core/types.js",
+      "require": "./dist/cjs/core/types.js",
       "types": "./dist/core/types.d.ts"
     },
     "./router": {
       "import": "./dist/core/router.js",
+      "require": "./dist/cjs/core/router.js",
       "types": "./dist/core/router.d.ts"
     },
     "./providers": {
       "import": "./dist/providers/registry.js",
+      "require": "./dist/cjs/providers/registry.js",
       "types": "./dist/providers/registry.d.ts"
     },
     "./prompts": {
       "import": "./dist/prompts/registry.js",
+      "require": "./dist/cjs/prompts/registry.js",
       "types": "./dist/prompts/registry.d.ts"
     }
   },
@@ -34,7 +39,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "build": "npm run clean && tsc -p tsconfig.build.json && tsc -p tsconfig.cjs.json && node -e \"require('fs').writeFileSync('dist/cjs/package.json',JSON.stringify({type:'commonjs'}))\"",
     "dev": "tsc -p tsconfig.build.json --watch",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "typecheck": "tsc --noEmit",

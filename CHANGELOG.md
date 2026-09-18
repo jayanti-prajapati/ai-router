@@ -7,6 +7,14 @@ Versioning: [SemVer](https://semver.org/)
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-09-18
+
+### Fixed
+
+- Added CommonJS (CJS) build output to `dist/cjs/` to resolve Yarn warning "no commonjs entry point" ([#1](https://github.com/jayanti-prajapati/smart-ai-router/issues/1))
+- Updated `exports` map with `"require"` conditions for all entry points
+- Updated `"main"` field to `dist/cjs/index.js` for legacy bundler compatibility
+
 ## [1.0.4] - 2026-09-16
 
 ### Fixed

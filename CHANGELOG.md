@@ -7,6 +7,18 @@ Versioning: [SemVer](https://semver.org/)
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-09-19
+
+### Changed
+
+- Version bump to resolve npm staged-tarball conflict from `1.1.2` publish attempt; no functional changes
+
+## [1.1.2] - 2026-09-19
+
+### Changed
+
+- Version bump (staged by npm; functionally identical to 1.1.1)
+
 ## [1.1.1] - 2026-09-19
 
 ### Added

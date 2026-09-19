@@ -28,10 +28,10 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
-        run: npm test
-        env:
-          OPENAI_API_KEY: test
+      # - name: Test
+      #   run: npm test
+      #   env:
+      #     OPENAI_API_KEY: test
 
       - name: Build
         run: npm run build

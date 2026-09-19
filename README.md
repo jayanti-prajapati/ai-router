@@ -217,18 +217,53 @@ await runAiRequest({ task: "review", input: code, promptId: "code-review" });
 await runAiRequest({ task: "review", input: code, promptId: "code-review@1" });
 ```
 
-A pinned template can override complexity and temperature:
+### Custom prompt templates
+
+Use `registerPrompt()` to add your own system prompts at runtime — no forking required.
 
 ```typescript
-// In src/prompts/registry.ts
-{
-  id: 'json-transform',
+import { registerPrompt, runAiRequest } from "smart-ai-router";
+
+registerPrompt({
+  id: "customer-support",
   version: 1,
-  system: 'Output only valid JSON.',
-  user: 'Convert:\n\n{{input}}',
-  pinnedComplexity: 'simple', // classifier skipped entirely
-  temperature: 0,
-}
+  system:
+    "You are a helpful customer support agent for Acme Corp. " +
+    "Be polite, concise, and always offer a follow-up action.",
+  pinnedComplexity: "medium", // classifier is skipped for this template
+});
+
+const result = await runAiRequest({
+  task: "support",
+  input: userMessage,
+  promptId: "customer-support",
+});
+```
+
+Registering a new version promotes it to `latest`; the old version remains resolvable by `@1` suffix:
+
+```typescript
+registerPrompt({
+  id: "customer-support",
+  version: 2,
+  system: "Updated prompt v2",
+});
+
+getPrompt("customer-support"); // → version 2
+getPrompt("customer-support@1"); // → version 1 (still works)
+```
+
+A template can override complexity and temperature:
+
+```typescript
+registerPrompt({
+  id: "strict-json",
+  version: 1,
+  system: "Output only valid JSON. No prose.",
+  user: "Convert:\n\n{{input}}",
+  pinnedComplexity: "simple", // classifier skipped entirely
+  temperature: 0, // deterministic output
+});
 ```
 
 ---
@@ -247,49 +282,51 @@ AB_EXPERIMENTS='{"haiku-vs-nano":{"control":"gpt-4.1-nano","variant":"claude-hai
 
 ## Adding a custom provider
 
-1. Create `my-provider.ts` extending `BaseProvider`:
+Use `registerProvider(name, factory)` to add any vendor without forking the package.
 
 ```typescript
-import { BaseProvider, ProviderError } from "smart-ai-router";
-import type {
-  NormalizedRequest,
-  NormalizedResponse,
-  ProviderName,
-} from "smart-ai-router";
+import { registerProvider, BaseProvider } from "smart-ai-router";
+import type { NormalizedRequest, NormalizedResponse } from "smart-ai-router";
 
-export class MyProvider extends BaseProvider {
-  readonly name = "myprovider" as ProviderName;
+class GeminiProvider extends BaseProvider {
+  readonly name = "gemini" as const;
 
   protected async send(req: NormalizedRequest): Promise<NormalizedResponse> {
     // Call your vendor's API here.
-    // Use this.post() for a shared fetch wrapper with error normalisation.
+    // Use this.post() for a shared fetch wrapper with automatic error normalisation.
     const data = await this.post(
-      "https://api.example.com/v1/chat",
-      {
-        authorization: `Bearer ${process.env.MY_API_KEY}`,
-      },
-      { model: req.modelId, prompt: req.prompt },
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+      { "x-goog-api-key": process.env.GEMINI_API_KEY! },
+      { contents: [{ role: "user", parts: [{ text: req.prompt }] }] },
     );
 
     return {
-      output: data.text,
-      inputTokens: data.usage.input,
-      outputTokens: data.usage.output,
+      output: data.candidates[0].content.parts[0].text,
+      inputTokens: data.usageMetadata.promptTokenCount,
+      outputTokens: data.usageMetadata.candidatesTokenCount,
       finishReason: "stop",
     };
   }
 }
+
+// Register once at startup — the factory is called lazily on first use.
+registerProvider("gemini", () => new GeminiProvider());
 ```
 
-2. Register it before calling `runAiRequest`:
+Then add a model entry to your model catalog and route requests to it:
 
 ```typescript
-import { getProvider } from "smart-ai-router";
-// Monkey-patch the registry for now; a first-class registration API
-// is planned for v1.1.0.
+import { registerProvider, runAiRequest } from "smart-ai-router";
+// After registering the provider above...
+
+const result = await runAiRequest({
+  task: "explain",
+  input: "What is a transformer model?",
+  forceModel: "gemini-2.0-flash",
+});
 ```
 
-> A first-class `registerProvider(name, factory)` API will be added in v1.1.0. For now, fork `src/providers/registry.ts` and add a case.
+> `registerProvider()` replaces any previously cached instance for that name, making it easy to swap implementations in tests.
 
 ---
 

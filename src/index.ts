@@ -44,12 +44,17 @@ export {
 } from "./core/cost.js";
 
 // ── Provider registry ──────────────────────────────────────────────────────
-export { getProvider, resetProviderRegistry } from "./providers/registry.js";
+export {
+  getProvider,
+  registerProvider,
+  resetProviderRegistry,
+} from "./providers/registry.js";
 export { BaseProvider, ProviderError } from "./providers/base.provider.js";
 
 // ── Prompt registry ────────────────────────────────────────────────────────
 export {
   getPrompt,
+  registerPrompt,
   render,
   listPrompts,
   promptRef,

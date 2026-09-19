@@ -4,7 +4,11 @@
  * All concrete providers extend this and implement only `send()`. The base
  * handles the retry loop, error normalisation, and the shared `post()` helper.
  */
-import type { NormalizedRequest, NormalizedResponse, ProviderName } from '../core/types.js';
+import type {
+  NormalizedRequest,
+  NormalizedResponse,
+  ProviderName,
+} from "../core/types.js";
 
 export class ProviderError extends Error {
   constructor(
@@ -12,10 +16,11 @@ export class ProviderError extends Error {
     public readonly status: number,
     /** Whether the error is transient (safe to retry). */
     public readonly retryable: boolean,
-    public readonly provider: ProviderName,
+    /** Provider name — built-ins are `ProviderName`; custom providers may be any string. */
+    public readonly provider: ProviderName | string,
   ) {
     super(message);
-    this.name = 'ProviderError';
+    this.name = "ProviderError";
   }
 }
 
@@ -23,7 +28,8 @@ const MAX_RETRIES = 3;
 const BASE_DELAY_MS = 500;
 
 export abstract class BaseProvider {
-  abstract readonly name: ProviderName;
+  /** Provider name. Built-ins use the `ProviderName` union; custom providers may use any string. */
+  abstract readonly name: ProviderName | string;
 
   /** Implemented by each concrete provider. */
   protected abstract send(req: NormalizedRequest): Promise<NormalizedResponse>;
@@ -58,14 +64,14 @@ export abstract class BaseProvider {
     signal?: AbortSignal,
   ): Promise<T> {
     const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', ...headers },
+      method: "POST",
+      headers: { "content-type": "application/json", ...headers },
       body: JSON.stringify(body),
       signal,
     });
 
     if (!response.ok) {
-      const text = await response.text().catch(() => '');
+      const text = await response.text().catch(() => "");
       const retryable = response.status === 429 || response.status >= 500;
       throw new ProviderError(
         `${response.status} ${response.statusText}: ${text}`,

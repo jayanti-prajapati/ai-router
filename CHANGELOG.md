@@ -7,6 +7,23 @@ Versioning: [SemVer](https://semver.org/)
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-09-19
+
+### Added
+
+- `registerProvider(name, factory)` — first-class runtime API to add custom providers (Gemini, Cohere, Mistral, …) without forking the package. Factory is called lazily; re-registering clears the cached instance.
+- `registerPrompt(template)` — register custom prompt templates at runtime without touching source code. Versioning, `pinnedComplexity`, `temperature`, and `{{task}}`/`{{input}}` placeholders are fully supported.
+- Both new APIs are exported from the package root (`import { registerProvider, registerPrompt } from 'smart-ai-router'`).
+- **66 unit and integration tests** covering: cost math, quality scorer, heuristic classifier, router (tier selection, priority, cost guard, error paths), `registerProvider`, `registerPrompt`, and full `runAiRequest` pipeline with mocked providers (cache, escalation, custom templates).
+- CI now runs `npm test` on Node 18/20/22 before building, with `OPENAI_API_KEY=test` so no real API calls are made.
+- `tsx` added as a dev dependency to enable `node:test` + TypeScript without a separate compile step.
+
+### Changed
+
+- `listPrompts()` now reflects runtime-registered templates (previously only returned hardcoded TEMPLATES array).
+- `resetProviderRegistry()` now also clears custom factories (consistent reset for tests).
+- README: updated "Adding a custom provider" section with `registerProvider()` example; added "Custom prompt templates" section with `registerPrompt()` examples.
+
 ## [1.0.5] - 2026-09-18
 
 ### Fixed

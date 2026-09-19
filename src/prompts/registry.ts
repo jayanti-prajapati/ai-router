@@ -8,7 +8,7 @@
  *
  * A template may pin complexity and/or temperature, bypassing the classifier.
  */
-import type { Complexity } from '../core/types.js';
+import type { Complexity } from "../core/types.js";
 
 export interface PromptTemplate {
   id: string;
@@ -30,52 +30,52 @@ export interface PromptTemplate {
 const TEMPLATES: PromptTemplate[] = [
   // ── default: pass-through, no pins ───────────────────────────────────────
   {
-    id: 'default',
+    id: "default",
     version: 1,
-    system: 'You are a helpful assistant. Respond concisely and accurately.',
+    system: "You are a helpful assistant. Respond concisely and accurately.",
   },
 
   // ── json-transform: always simple, zero temperature ───────────────────────
   {
-    id: 'json-transform',
+    id: "json-transform",
     version: 1,
-    system: 'Output only valid JSON. No explanation, no markdown fences.',
-    user: 'Convert the following to JSON:\n\n{{input}}',
-    pinnedComplexity: 'simple',
+    system: "Output only valid JSON. No explanation, no markdown fences.",
+    user: "Convert the following to JSON:\n\n{{input}}",
+    pinnedComplexity: "simple",
     temperature: 0,
   },
 
   // ── code-review@1 (original) ──────────────────────────────────────────────
   {
-    id: 'code-review',
+    id: "code-review",
     version: 1,
     system:
-      'You are an expert code reviewer. Identify bugs, security issues, and ' +
-      'opportunities to improve readability and performance. Be specific.',
-    user: 'Review the following code:\n\n{{input}}',
-    pinnedComplexity: 'complex',
+      "You are an expert code reviewer. Identify bugs, security issues, and " +
+      "opportunities to improve readability and performance. Be specific.",
+    user: "Review the following code:\n\n{{input}}",
+    pinnedComplexity: "complex",
   },
 
   // ── code-review@2 (structured output) ────────────────────────────────────
   {
-    id: 'code-review',
+    id: "code-review",
     version: 2,
     system:
-      'You are an expert code reviewer. Return a JSON object with keys: ' +
+      "You are an expert code reviewer. Return a JSON object with keys: " +
       '"summary" (string), "issues" (array of {severity, location, description}), ' +
       '"suggestions" (array of strings). No prose outside the JSON.',
-    user: 'Review the following code and return structured JSON:\n\n{{input}}',
-    pinnedComplexity: 'complex',
+    user: "Review the following code and return structured JSON:\n\n{{input}}",
+    pinnedComplexity: "complex",
     temperature: 0,
   },
 
   // ── summarize ─────────────────────────────────────────────────────────────
   {
-    id: 'summarize',
+    id: "summarize",
     version: 1,
-    system: 'Summarize the following text in 3-5 bullet points. Be concise.',
-    user: '{{input}}',
-    pinnedComplexity: 'simple',
+    system: "Summarize the following text in 3-5 bullet points. Be concise.",
+    user: "{{input}}",
+    pinnedComplexity: "simple",
   },
 ];
 
@@ -89,9 +89,47 @@ for (const t of TEMPLATES) {
 }
 
 /** Map: "id@version" → template */
-const byRef = new Map<string, PromptTemplate>(TEMPLATES.map((t) => [`${t.id}@${t.version}`, t]));
+const byRef = new Map<string, PromptTemplate>(
+  TEMPLATES.map((t) => [`${t.id}@${t.version}`, t]),
+);
 
 // ─── Public API ───────────────────────────────────────────────────────────
+
+/**
+ * Register a custom prompt template at runtime.
+ *
+ * This lets library users add their own system prompts without forking the
+ * source. Templates are versioned: registering the same id with a higher
+ * version number promotes it to "latest". Old versions are retained so
+ * telemetry rows referencing them remain comparable.
+ *
+ * Registering a template with the exact same id@version as an existing one
+ * replaces it (useful for overriding built-in defaults in tests).
+ *
+ * @example
+ * ```typescript
+ * import { registerPrompt } from 'smart-ai-router';
+ *
+ * registerPrompt({
+ *   id: 'customer-support',
+ *   version: 1,
+ *   system: 'You are a helpful customer support agent for Acme Corp. ' +
+ *           'Be polite, concise, and always offer a follow-up action.',
+ *   pinnedComplexity: 'medium',
+ * });
+ *
+ * // Then use it in any request:
+ * await runAiRequest({ task: 'support', input: userMessage, promptId: 'customer-support' });
+ * ```
+ */
+export function registerPrompt(template: PromptTemplate): void {
+  const key = `${template.id}@${template.version}`;
+  byRef.set(key, template);
+  const current = latestVersion.get(template.id) ?? 0;
+  if (template.version > current) {
+    latestVersion.set(template.id, template.version);
+  }
+}
 
 /**
  * Look up a template. Accepts:
@@ -101,7 +139,7 @@ const byRef = new Map<string, PromptTemplate>(TEMPLATES.map((t) => [`${t.id}@${t
  */
 export function getPrompt(ref?: string): PromptTemplate {
   if (!ref) return byRef.get(`default@1`)!;
-  const [id, vStr] = ref.split('@');
+  const [id, vStr] = ref.split("@");
   if (!id) return byRef.get(`default@1`)!;
   const version = vStr ? parseInt(vStr, 10) : (latestVersion.get(id) ?? 1);
   const key = `${id}@${version}`;
@@ -112,9 +150,12 @@ export function getPrompt(ref?: string): PromptTemplate {
  * Render a template's user message, substituting `{{task}}` and `{{input}}`.
  * If the template has no `user` field, input is used verbatim.
  */
-export function render(template: PromptTemplate, vars: { task: string; input: string }): string {
-  const tpl = template.user ?? '{{input}}';
-  return tpl.replace('{{task}}', vars.task).replace('{{input}}', vars.input);
+export function render(
+  template: PromptTemplate,
+  vars: { task: string; input: string },
+): string {
+  const tpl = template.user ?? "{{input}}";
+  return tpl.replace("{{task}}", vars.task).replace("{{input}}", vars.input);
 }
 
 /** Canonical string reference for a template, e.g. "code-review@2". */
@@ -122,9 +163,13 @@ export function promptRef(template: PromptTemplate): string {
   return `${template.id}@${template.version}`;
 }
 
-/** List all templates for the /ai/prompts endpoint. */
-export function listPrompts(): Array<{ id: string; version: number; isLatest: boolean }> {
-  return TEMPLATES.map((t) => ({
+/** List all registered templates for the /ai/prompts endpoint. */
+export function listPrompts(): Array<{
+  id: string;
+  version: number;
+  isLatest: boolean;
+}> {
+  return [...byRef.values()].map((t) => ({
     id: t.id,
     version: t.version,
     isLatest: latestVersion.get(t.id) === t.version,

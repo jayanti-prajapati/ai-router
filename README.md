@@ -37,10 +37,10 @@ cp node_modules/smart-ai-router/.env.example .env
 ## Quick start
 
 ```typescript
-import { runAiRequest } from "smart-ai-router";
+import { Task, runAiRequest } from "smart-ai-router";
 
 const result = await runAiRequest({
-  task: "format",
+  task: Task.FORMAT,
   input: "Convert to JSON: name Ada Lovelace, born 1815, field mathematics.",
 });
 
@@ -116,6 +116,74 @@ Request
 
 ---
 
+## Task types
+
+Import `Task` for autocomplete and type safety — no magic strings required.
+
+```typescript
+import { Task, runAiRequest } from "smart-ai-router";
+
+// Simple tier — cheap, fast models
+await runAiRequest({ task: Task.FORMAT, input: "Convert to JSON: ..." });
+await runAiRequest({ task: Task.SUMMARIZE, input: "Summarize: ..." });
+await runAiRequest({ task: Task.TRANSLATE, input: "Translate to French: ..." });
+await runAiRequest({ task: Task.CLASSIFY, input: "Label this review: ..." });
+await runAiRequest({ task: Task.EXPLAIN, input: "What is a monad?" });
+await runAiRequest({ task: Task.TRANSFORM, input: "Reformat this CSV: ..." });
+
+// Medium tier — code generation, structured output
+await runAiRequest({ task: Task.CODEGEN, input: "Write a debounce function" });
+await runAiRequest({
+  task: Task.API_INTEGRATION,
+  input: "Integrate Stripe webhooks",
+});
+await runAiRequest({
+  task: Task.STRUCTURED_OUTPUT,
+  input: "Extract fields from ...",
+});
+
+// Complex tier — architecture, reasoning, code review
+await runAiRequest({
+  task: Task.ARCHITECTURE,
+  input: "Design a payment system ...",
+});
+await runAiRequest({
+  task: Task.SYSTEM_DESIGN,
+  input: "Design a URL shortener ...",
+});
+await runAiRequest({ task: Task.CODE_REVIEW, input: code });
+await runAiRequest({
+  task: Task.REASONING,
+  input: "Analyse trade-offs of ...",
+});
+
+// Custom task — still works, classified by heuristic
+await runAiRequest({ task: "my-custom-task", input: "..." });
+```
+
+All built-in task values and the tier they hint at:
+
+| Constant                 | String value          | Complexity hint |
+| ------------------------ | --------------------- | --------------- |
+| `Task.FORMAT`            | `'format'`            | simple          |
+| `Task.JSON`              | `'json'`              | simple          |
+| `Task.TRANSLATE`         | `'translate'`         | simple          |
+| `Task.CLASSIFY`          | `'classify'`          | simple          |
+| `Task.SUMMARIZE`         | `'summarize'`         | simple          |
+| `Task.EXPLAIN`           | `'explain'`           | _(heuristic)_   |
+| `Task.TRANSFORM`         | `'transform'`         | _(heuristic)_   |
+| `Task.CODEGEN`           | `'codegen'`           | medium          |
+| `Task.API_INTEGRATION`   | `'api-integration'`   | medium          |
+| `Task.STRUCTURED_OUTPUT` | `'structured-output'` | medium          |
+| `Task.ARCHITECTURE`      | `'architecture'`      | complex         |
+| `Task.SYSTEM_DESIGN`     | `'system-design'`     | complex         |
+| `Task.CODE_REVIEW`       | `'code-review'`       | complex         |
+| `Task.REASONING`         | `'reasoning'`         | complex         |
+
+`TaskType` is an open union — any other string is valid and classified by the heuristic.
+
+---
+
 ## API reference
 
 ### `runAiRequest(req: RunRequest): Promise<RunResponse>`
@@ -124,16 +192,16 @@ The primary function. Handles the full lifecycle: cache → classify → route �
 
 #### `RunRequest`
 
-| Field        | Type                                 | Required | Description                                               |
-| ------------ | ------------------------------------ | -------- | --------------------------------------------------------- |
-| `task`       | `string`                             | ✓        | Short label for the job type (`"codegen"`, `"format"`, …) |
-| `input`      | `string`                             | ✓        | The full prompt body                                      |
-| `priority`   | `"speed" \| "balanced" \| "quality"` |          | Default: `"balanced"`                                     |
-| `forceModel` | `string`                             |          | Bypass classification and routing entirely                |
-| `promptId`   | `string`                             |          | Template reference, e.g. `"code-review@2"`                |
-| `acceptCost` | `boolean`                            |          | Allow cost above `MAX_COST_PER_REQUEST`                   |
-| `noCache`    | `boolean`                            |          | Skip read and write for this call                         |
-| `debug`      | `boolean`                            |          | Include signals and routing reason in response            |
+| Field        | Type                                 | Required | Description                                             |
+| ------------ | ------------------------------------ | -------- | ------------------------------------------------------- |
+| `task`       | `TaskType`                           | ✓        | Task name — use `Task.*` constants or any custom string |
+| `input`      | `string`                             | ✓        | The full prompt body                                    |
+| `priority`   | `"speed" \| "balanced" \| "quality"` |          | Default: `"balanced"`                                   |
+| `forceModel` | `string`                             |          | Bypass classification and routing entirely              |
+| `promptId`   | `string`                             |          | Template reference, e.g. `"code-review@2"`              |
+| `acceptCost` | `boolean`                            |          | Allow cost above `MAX_COST_PER_REQUEST`                 |
+| `noCache`    | `boolean`                            |          | Skip read and write for this call                       |
+| `debug`      | `boolean`                            |          | Include signals and routing reason in response          |
 
 #### `RunResponse`
 

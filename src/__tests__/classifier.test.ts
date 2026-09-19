@@ -1,6 +1,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { classify } from "../core/classifier.js";
+import { Task } from "../core/types.js";
 
 // classify() is async (may call meta-model), but with ENABLE_META_CLASSIFIER=false
 // (the default) it returns synchronously after the heuristic.
@@ -48,8 +49,9 @@ describe("classify — heuristic", () => {
   });
 
   test("translate keyword → simple", async () => {
+    // Task.EXPLAIN has no classifier hint — the 'translate' keyword in the input drives the result.
     const r = await classify({
-      task: "task",
+      task: Task.EXPLAIN,
       input: "Translate this sentence to French: hello world.",
     });
     assert.equal(r.complexity, "simple");
@@ -77,9 +79,9 @@ describe("classify — heuristic", () => {
   });
 
   test("code generation verb + technical noun detected in signals", async () => {
-    // "Write" (verb) + "service/class/middleware" (noun) → signal fires even if complexity stays simple
+    // Task.EXPLAIN has no classifier hint — generation-verb + technical-noun in the input drives the signal.
     const r = await classify({
-      task: "task",
+      task: Task.EXPLAIN,
       input: "Write a service class that handles authentication middleware.",
     });
     assert.ok(

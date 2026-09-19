@@ -7,6 +7,20 @@ Versioning: [SemVer](https://semver.org/)
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-09-19
+
+### Added
+
+- `Task` const object with 14 named task constants (`Task.FORMAT`, `Task.CODEGEN`, `Task.ARCHITECTURE`, etc.) — gives users full IDE autocomplete instead of magic strings ([#6](https://github.com/jayanti-prajapati/smart-ai-router/issues/6))
+- `TaskType` open string-union (`typeof Task[keyof typeof Task] | (string & {})`) — `RunRequest.task` is now typed; existing plain-string callers are unaffected
+- Both `Task` and `TaskType` exported from the package root
+
+### Changed
+
+- `RunRequest.task` type changed from `string` to `TaskType` (backward-compatible: all existing string literals still compile)
+- README: new "Task types" section with full constant table and examples; Quick start updated to use `Task.FORMAT`
+- Two classifier tests updated to use `Task.EXPLAIN` instead of the `'task'` placeholder string
+
 ## [1.1.0] - 2026-09-19
 
 ### Added

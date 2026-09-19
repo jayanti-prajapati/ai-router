@@ -16,7 +16,9 @@
 export { runAiRequest } from "./services/ai.service.js";
 
 // ── Types ──────────────────────────────────────────────────────────────────
+export { Task } from "./core/types.js";
 export type {
+  TaskType,
   RunRequest,
   RunResponse,
   Complexity,
